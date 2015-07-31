@@ -1,0 +1,20 @@
+#production
+deployment:
+  user: wushuiyong
+  from: /Users/wushuiyong/workspace/git/deploy/maga-test
+  to: /var/www/deploy/php_deploy
+  excludes:
+  strategy: targz
+releases:
+  enabled: true
+  max: 10
+  symlink: current
+  directory: releases
+hosts:
+    - 127.0.0.1
+tasks:
+  pre-deploy:
+  on-deploy:
+  post-release:
+  post-deploy:
+
