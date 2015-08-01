@@ -13,7 +13,8 @@ use deploy\config\Exception\ParseException;
 class Config {
 
     public static function getEnv($env = 'production') {
-        return static::parse($env);
+        $file = dirname(__DIR__) . "/../yml/config/env/{$env}.yml";
+        return static::parse($file);
     }
 
     /**
