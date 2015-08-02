@@ -12,8 +12,47 @@ use deploy\config\Exception\ParseException;
 
 class Config {
 
-    public static function getEnv($env = 'production') {
-        return static::parse($env);
+    private $deployment = [];
+
+    private $releases   = [];
+
+    private $hosts      = [];
+
+    private $tasks      = [];
+
+    private $releaseId;
+
+    private $targetDir;
+
+    public function __construct($env) {
+        $this->getEnv($env);
+    }
+
+    public function getEnv($env = 'production') {
+        $config = $this->parse($env);
+        if (empty($config)) throw new ParseException('找不到相关环境配置');
+
+        $this->deployment = $config['deployment'];
+        $this->releases   = $config['releases'];
+        $this->hosts      = $config['hosts'];
+        $this->tasks      = $config['tasks'];
+        $this->releaseId  = date("Ymd-His", time());
+        $this->targetDir  = rtrim($this->deployment['to'], '/') . '/' . $this->releaseId;
+        return $this;
+    }
+
+    /**
+     * Gathers the files to exclude
+     *
+     * @return array
+     */
+    public function getExcludes() {
+        $excludes = [
+            '.git', '.svn', '.mage', '.gitignore', '.gitkeep', 'nohup.out',
+        ];
+
+        $userExcludes = $this->config->deployment['excludes'];
+        return array_merge($excludes, $userExcludes);
     }
 
     /**
@@ -42,7 +81,7 @@ class Config {
      *
      * @api
      */
-    public static function parse($input, $exceptionOnInvalidType = false, $objectSupport = false)
+    public function parse($input, $exceptionOnInvalidType = false, $objectSupport = false)
     {
         // if input is a file, process it
         $file = '';
@@ -67,4 +106,42 @@ class Config {
             throw $e;
         }
     }
+
+    /**
+     * Get the general Host Identity File Option
+     *
+     * @return string
+     */
+    public function getHostIdentityFileOption() {
+        return $this->config->deployment['identity-file'] ? ('-i ' . $this->deployment['identity-file'] . ' ') : '';
+    }
+
+    /**
+     * Get the current Host Port
+     *
+     * @return integer
+     */
+    public function getHostPort($host) {
+        $info = explode(':', $host);
+        return isset($info[1]) ? $info[1] : 22;
+    }
+
+    /**
+     * Get the current host name
+     *
+     * @return string
+     */
+    public function getHostName($host) {
+        $info = explode(':', $host);
+        return $info[0];
+    }
+
+    public function __GET($name) {
+        $getter = 'get' . ucwords($name);
+        $attribute = lcfirst($name);
+        return method_exists($this, $getter)
+            ? $this->$getter()
+            : (isset($this->$attribute) ? $this->$attribute : null);
+    }
+
 }

@@ -50,7 +50,7 @@ abstract class Command {
     }
 
     final protected function runRemoteCommand($command, &$output, $cdToDirFirst = true) {
-        if ($this->config->release('enabled', false) === true) {
+        if (0&&$this->config->release('enabled', false) === true) {
             if ($this instanceof IsReleaseAware) {
                 $releasesDirectory = '';
             } else {
@@ -64,23 +64,40 @@ abstract class Command {
         }
 
         // if general.yml includes "ssy_needs_tty: true", then add "-t" to the ssh command
-        $needs_tty = ($this->config->general('ssh_needs_tty', false) ? '-t' : '');
+        $needs_tty = ''; #($this->config->general('ssh_needs_tty', false) ? '-t' : '');
 
-        $localCommand = 'ssh ' . $this->config->getHostIdentityFileOption() . $needs_tty . ' -p ' . $this->config->getHostPort() . ' '
-            . '-q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no '
-            . $this->config->getConnectTimeoutOption()
-            . ($this->config->deployment('user') != '' ? $this->config->deployment('user') . '@' : '')
-            . $this->config->getHostName();
+        foreach ($this->config->hosts as $remoteHost) {
+            $localCommand = 'ssh ' . $this->config->getHostIdentityFileOption() . $needs_tty . ' -p ' . $this->config->getHostPort($remoteHost) . ' '
+                . '-q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no '
+//            . $this->config->getConnectTimeoutOption()
+                . (isset($this->config->deployment['user']) ? $this->config->deployment['user'] . '@' : '')
+                . $this->config->getHostName($remoteHost);
 
-        $remoteCommand = str_replace('"', '\"', $command);
-        if ($cdToDirFirst) {
-            $remoteCommand = 'cd ' . rtrim($this->config->deployment('to'), '/') . $releasesDirectory . ' && ' . $remoteCommand;
+            $remoteCommand = str_replace('"', '\"', $command);
+            if ($cdToDirFirst) {
+                $remoteCommand = 'cd ' . rtrim($this->config->deployment['to'], '/') . $releasesDirectory . ' && ' . $remoteCommand;
+            }
+            $localCommand .= ' ' . '"sh -c \"' . $remoteCommand . '\""';
+            static::log('Run remote command ' . $remoteCommand);
+
+            $this->runLocalCommand($localCommand, $output);
         }
-        $localCommand .= ' ' . '"sh -c \"' . $remoteCommand . '\""';
-        Console::log('Run remote command ' . $remoteCommand);
+        return true;
+    }
 
-        return $this->runCommandLocal($localCommand, $output);
+    /**
+     * Generates the Excludes for rsync
+     * @param array $excludes
+     * @return string
+     */
+    protected function excludes($excludes)
+    {
+        $excludesRsync = '';
+        foreach ($excludes as $exclude) {
+            $excludesRsync .= ' --exclude=' . escapeshellarg($exclude) . ' ';
+        }
 
+        return trim($excludesRsync);
     }
 
     public static function log($message) {
@@ -95,4 +112,6 @@ abstract class Command {
 
         echo $message . PHP_EOL;
     }
+
+
 }
