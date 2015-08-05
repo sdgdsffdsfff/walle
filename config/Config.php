@@ -12,6 +12,10 @@ use deploy\config\Exception\ParseException;
 
 class Config {
 
+    private $config;
+
+    private $scm        = [];
+
     private $deployment = [];
 
     private $releases   = [];
@@ -29,14 +33,18 @@ class Config {
     }
 
     public function getEnv($env = 'production') {
-        $config = $this->parse($env);
-        if (empty($config)) throw new ParseException('找不到相关环境配置');
+        if (isset($this->config)) return $this;
 
-        $this->deployment = $config['deployment'];
-        $this->releases   = $config['releases'];
-        $this->hosts      = $config['hosts'];
-        $this->tasks      = $config['tasks'];
+        $this->config = $this->parse($env);
+        if (empty($this->config)) throw new ParseException('找不到相关环境配置');
+
+        $this->scm        = $this->config['scm'];
+        $this->deployment = $this->config['deployment'];
         $this->releaseId  = date("Ymd-His", time());
+        $this->config['releases']['releaseId'] = $this->releaseId;
+        $this->releases   = $this->config['releases'];
+        $this->hosts      = $this->config['hosts'];
+        $this->tasks      = $this->config['tasks'];
         $this->targetDir  = rtrim($this->deployment['to'], '/') . '/' . $this->releaseId;
         return $this;
     }
@@ -81,8 +89,7 @@ class Config {
      *
      * @api
      */
-    public function parse($input, $exceptionOnInvalidType = false, $objectSupport = false)
-    {
+    public function parse($input, $exceptionOnInvalidType = false, $objectSupport = false) {
         // if input is a file, process it
         $file = '';
         if (strpos($input, "\n") === false && is_file($input)) {
@@ -113,7 +120,7 @@ class Config {
      * @return string
      */
     public function getHostIdentityFileOption() {
-        return $this->config->deployment['identity-file'] ? ('-i ' . $this->deployment['identity-file'] . ' ') : '';
+        return $this->deployment['identity-file'] ? ('-i ' . $this->deployment['identity-file'] . ' ') : '';
     }
 
     /**
@@ -134,6 +141,34 @@ class Config {
     public function getHostName($host) {
         $info = explode(':', $host);
         return $info[0];
+    }
+
+    public function getHosts() {
+        return $this->hosts;
+    }
+
+    public function getScm($name, $default = null) {
+        return isset($this->scm[$name])
+            ? $this->scm[$name]
+            : $default;
+    }
+
+    public function getDeployment($name, $default = null) {
+        return isset($this->deployment[$name])
+            ? $this->deployment[$name]
+            : $default;
+    }
+
+    public function getReleases($name, $default = null) {
+        return isset($this->releases[$name])
+            ? $this->releases[$name]
+            : $default;
+    }
+
+    public function getTasks($name, $default) {
+        return isset($this->tasks[$name])
+            ? $this->tasks[$name]
+            : $default;
     }
 
     public function __GET($name) {

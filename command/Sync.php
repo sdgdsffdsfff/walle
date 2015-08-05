@@ -9,48 +9,76 @@
 namespace deploy\command;
 
 use deploy\command\Command;
-use deploy\config\Config;
+use deploy\command\Git;
 
 class Sync extends Command {
 
-    protected $config;
-
-    public function setEnv($env = 'production') {
-        $this->config = new Config($env);
-        return $this;
-    }
 
     public function run() {
-//        $logL = $logR = null;
-//        $local = $this->runLocalCommand('ls ' . $this->config->deployment['from'], $logL);
-//        $remote = $this->runRemoteCommand('ls ' . $this->config->deployment['to'], $logR);
-//        d($local);
-//        d($remote);
+
+        // 记录此次操作入数据库（可以迁移到外层去做）
+
         // 目录检查，无则创建
 
+        // 权限检查
+
+        // 更新代码文件
+        $git = new Git();
+        $git->setConfig($this->getConfig());
+//        $git->updateRepo();
+
+        // 回滚版本
+//        $commit = '425d360eb4a1fa26e0cef7d858d98c2992a40bde';
+//        $git->rollback($commit);
+
+        // 查看提交历史
+        $list = $git->getCommitList();
+        echo '+++++++++',PHP_EOL;
+        d($list);
+        die;
+
+
         // 同步文件
-        foreach ($this->config->hosts as $remoteHost) {
+        foreach ($this->getConfig()->getHosts() as $remoteHost) {
             $this->_syncFiles($remoteHost);
         }
 
 
         // 创建链接指向
+        $remote = new RemoteCmd();
+        $remote->setConfig($this->getConfig());
+        $remote->link();
     }
 
+    public function directorAndPermission() {
+        $command = 'mkdir -p %s' . $this->getConfig()->targetDir;
+        if (!$this->runRemoteCommand($command, $log)) {
+            $command = 'mkdir -p ' . $this->getConfig()->targetDir;
+            $result = $this->runRemoteCommand($command, $log);
+            dd($result);
+        }
+
+    }
+
+    /**
+     * rsync 同步文件
+     *
+     * @param $remoteHost 远程host，格式：host 、host:port
+     * @return bool
+     */
     private function _syncFiles($remoteHost) {
-        $excludes = $this->config->getExcludes();
+        $excludes = $this->getConfig()->getExcludes();
         $command = 'rsync -avz '
 //            . $strategyFlags . ' '
-            . '--rsh="ssh ' . $this->config->getHostIdentityFileOption()
-            . '-p' . $this->config->getHostPort($remoteHost) . '" '
+            . '--rsh="ssh ' . $this->getConfig()->getHostIdentityFileOption()
+            . '-p' . $this->getConfig()->getHostPort($remoteHost) . '" '
             . $this->excludes($excludes) . ' '
 //            . $this->excludesListFile($excludesListFilePath) . ' '
-            . $this->config->deployment['from'] . ' '
-            . (isset($this->config->deployment['user']) ? $this->config->deployment['user'] . '@' : '')
-            . $this->config->getHostName($remoteHost) . ':' . $this->config->targetDir;
+            . $this->getConfig()->getDeployment('from') . ' '
+            . ($this->getConfig()->getDeployment('user') ? $this->getConfig()->getDeployment('user') . '@' : '')
+            . $this->getConfig()->getHostName($remoteHost) . ':' . $this->getConfig()->targetDir;
 
-        $result = $this->runLocalCommand($command, $syncLog);
-        return $result;
+        return $this->runLocalCommand($command, $syncLog);
     }
 
 }
