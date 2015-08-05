@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace deploy\config;
+namespace walle\config;
 
 /**
  * Unescaper encapsulates unescaping rules for single and double-quoted

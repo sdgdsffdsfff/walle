@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace deploy\config;
+namespace walle\config;
 
-use deploy\config\Inline;
+use walle\config\Inline;
 
 /**
  * Dumper dumps PHP variables to YAML strings.

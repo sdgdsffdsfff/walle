@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace deploy\config\Exception;
+namespace walle\config\Exception;
 
-use deploy\config\Exception\ExceptionInterface;
+use walle\config\Exception\ExceptionInterface;
 
 /**
  * Exception class thrown when an error occurs during parsing.

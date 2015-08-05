@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace deploy\config;
+namespace walle\config;
 
 /**
  * Escaper encapsulates escaping rules for single and double-quoted

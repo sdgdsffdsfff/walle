@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace deploy\config;
+namespace walle\config;
 
-use deploy\config\Inline;
-use deploy\config\Exception\ParseException;
+use walle\config\Inline;
+use walle\config\Exception\ParseException;
 
 /**
  * Parser parses YAML strings to convert them to PHP arrays.

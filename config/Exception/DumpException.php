@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace deploy\config\Exception;
+namespace walle\config\Exception;
 
-use deploy\config\Exception\RuntimeException;
+use walle\config\Exception\RuntimeException;
 
 /**
  * Exception class thrown when an error occurs during dumping.

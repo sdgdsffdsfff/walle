@@ -1,5 +1,5 @@
 {
-    "name": "wushuiyong/php-deploy",
+    "name": "wushuiyong/walle",
     "description": "a php web ui deploy tool",
     "license": "MIT",
     "authors": [
@@ -13,7 +13,7 @@
     },
     "autoload": {
         "psr-4": {
-            "deploy\\": ""
+            "walle\\": ""
         }
     }   
 }

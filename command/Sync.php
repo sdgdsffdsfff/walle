@@ -6,10 +6,10 @@
  * @File Name: command/Sync.php
  * @Description:
  * *****************************************************************/
-namespace deploy\command;
+namespace walle\command;
 
-use deploy\command\Command;
-use deploy\command\Git;
+use walle\command\Command;
+use walle\command\Git;
 
 class Sync extends Command {
 

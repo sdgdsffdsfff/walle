@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace deploy\config;
+namespace walle\config;
 
-use deploy\config\Escaper;
-use deploy\config\Unescaper;
-use deploy\config\Exception\ParseException;
-use deploy\config\Exception\DumpException;
+use walle\config\Escaper;
+use walle\config\Unescaper;
+use walle\config\Exception\ParseException;
+use walle\config\Exception\DumpException;
 
 /**
  * Inline implements a YAML parser/dumper for the YAML inline syntax.

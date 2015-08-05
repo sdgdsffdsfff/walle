@@ -6,9 +6,9 @@
  * @File Name: config/Config.php
  * @Description:
  * *****************************************************************/
-namespace deploy\config;
+namespace walle\config;
 
-use deploy\config\Exception\ParseException;
+use walle\config\Exception\ParseException;
 
 class Config {
 

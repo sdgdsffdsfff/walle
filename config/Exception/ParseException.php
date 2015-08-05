@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace deploy\config\Exception;
+namespace walle\config\Exception;
 
-use deploy\config\Exception\RuntimeException;
+use walle\config\Exception\RuntimeException;
 
 if (!defined('JSON_UNESCAPED_UNICODE')) {
     define('JSON_UNESCAPED_SLASHES', 64);

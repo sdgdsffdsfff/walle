@@ -6,9 +6,9 @@
  * @File Name: command/strategy/Rsync.php
  * @Description:
  * *****************************************************************/
-namespace deploy\command\strategy;
+namespace walle\command\strategy;
 
-use deploy\command\Command;
+use walle\command\Command;
 
 class Rsync extends Command {
 

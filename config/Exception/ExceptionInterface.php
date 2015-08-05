@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace deploy\config\Exception;
+namespace walle\config\Exception;
 
 /**
  * Exception interface for all exceptions thrown by the component.

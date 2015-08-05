@@ -6,9 +6,9 @@
  * @File Name: command/Command.php
  * @Description:
  * *****************************************************************/
-namespace deploy\command;
+namespace walle\command;
 
-use deploy\config\Config;
+use walle\config\Config;
 
 abstract class Command {
 
@@ -26,7 +26,7 @@ abstract class Command {
 
     /**
      * Config
-     * @var \deploy\config\Config
+     * @var \walle\config\Config
      */
     protected $config;
 
@@ -89,7 +89,7 @@ abstract class Command {
     }
 
     public function setConfig($env = 'production') {
-        if ($env instanceof \deploy\config\Config) {
+        if ($env instanceof \walle\config\Config) {
             $this->config = $env;
         } else {
             $this->config = new Config($env);

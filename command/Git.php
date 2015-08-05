@@ -6,9 +6,9 @@
  * @File Name: command/Git.php
  * @Description:
  * *****************************************************************/
-namespace deploy\command;
+namespace walle\command;
 
-use deploy\command\Command;
+use walle\command\Command;
 
 class Git extends Command {
 
