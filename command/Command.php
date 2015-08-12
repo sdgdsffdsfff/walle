@@ -118,14 +118,14 @@ abstract class Command {
     public static function log($message) {
         if (!self::$logEnabled) return;
         if (self::$log === null) {
-            $logFile = realpath(getcwd() . '/runtime/logs') . '/log-' . date('Ymd-His') . '.log';
+            $logFile = realpath('/Users/wushuiyong/workspace/git/zlog/web/runtime/logs/') . '/log-' . date('Ymd-His') . '.log';
             self::$log = fopen($logFile, 'w');
         }
 
         $message = date('Y-m-d H:i:s -- ') . $message;
         fwrite(self::$log, $message . PHP_EOL);
 
-        echo $message . PHP_EOL;
+//        echo $message . PHP_EOL;
     }
 
 

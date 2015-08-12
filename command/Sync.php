@@ -40,7 +40,7 @@ class Sync extends Command {
 
         // 同步文件
         foreach ($this->getConfig()->getHosts() as $remoteHost) {
-            $this->_syncFiles($remoteHost);
+            $this->syncFiles($remoteHost);
         }
 
 
@@ -66,7 +66,7 @@ class Sync extends Command {
      * @param $remoteHost 远程host，格式：host 、host:port
      * @return bool
      */
-    private function _syncFiles($remoteHost) {
+    public function syncFiles($remoteHost) {
         $excludes = $this->getConfig()->getExcludes();
         $command = 'rsync -avz '
 //            . $strategyFlags . ' '

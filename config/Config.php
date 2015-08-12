@@ -36,6 +36,7 @@ class Config {
         if (isset($this->config)) return $this;
 
         $this->config = $this->parse($env);
+        dd($this->config);
         if (empty($this->config)) throw new ParseException('找不到相关环境配置');
 
         $this->scm        = $this->config['scm'];
@@ -59,7 +60,7 @@ class Config {
             '.git', '.svn', '.mage', '.gitignore', '.gitkeep', 'nohup.out',
         ];
 
-        $userExcludes = $this->config->deployment['excludes'];
+        $userExcludes = $this->deployment['excludes'];
         return array_merge($excludes, $userExcludes);
     }
 
