@@ -1,0 +1,24 @@
+#production
+scm:
+  type: git
+  url: git@github.com:meolu/php-deploy.git
+  branch: master
+deployment:
+  user: edison 
+  from: /var/www/deploy/from
+  to: /var/www/deploy/to
+  excludes:
+  strategy: targz
+releases:
+  enabled: true
+  max: 10
+  symlink: current
+  directory: releases
+hosts:
+    - 172.17.52.112
+tasks:
+  pre-deploy:
+  on-deploy:
+  post-release:
+  post-deploy:
+

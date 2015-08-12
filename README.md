@@ -1,59 +1,62 @@
-Yii 2 Base App for Purists
+Walle 瓦力 web ui
 ==========================
 
-Features
---------
+功能
+---
 
-The main tenet of this template is: Keep it simple! The idea was to only include
-the absolutely necessary features - and optimize some of the configuration issues
-of the original Yii2 base template.
+Walle景愿是做一个web系统工具，实现最基础的上线部署，以及日志分析。
 
- * Very flat configuration file structure
- * Provide local configuration files that won't get committed
- * Move `YII_DEBUG` and `YII_ENV` to configuration files
- * SiteController with login, logout, signup and password forget actions
+* 上线部署
+	* 用户分身份注册、登录
+	* 开发者发起上线任务申请
+	* 管理者审核上线任务
+	* 开发者一键部署上线
+	* 查看上线日志
 
-Configuration
--------------
+依赖
+---
 
-All configuration lives in 4 (or 5) files in the `config/` directory.
+* git
+* web ui的运行环境php、nginx（apache）、mysql
+* composer，安装wall、yii2
+* ssh
 
- * `web.php` configuration of the web app
- * `local.php` local overrides to the web config. **This file is not committed.**
- * `console.php` configuration of the console. Here you can reuse parts of the merged `web.php` and `local.php` configuration. See the example file for how this works.
- * `params.php` application parameters for both web and console application
- * `console-local.php` an optional file with local overrides to the console configuration. **This file is not committed.**
+配置
+---
+
+WEBROOT/deploy.yml/env/production.yml
+```
+#production
+scm:
+  type: git
+  url: git@github.com:meolu/walle.git
+  branch: master
+deployment:
+  user: edison
+  from: /var/www/deploy/from
+  to: /var/www/deploy/to
+  excludes:
+  strategy: targz
+releases:
+  enabled: true
+  max: 10
+  symlink: current
+  directory: releases
+hosts:
+    - 127.0.0.1
+tasks:
+  pre-deploy:
+  on-deploy:
+  post-release:
+  post-deploy:
+```
 
 
-Workflow
---------
+To Do List
+----------
 
-Before you can create new applications on a host, you first have to install the composer asset plugin:
-
-    composer global require "fxp/composer-asset-plugin:1.0.0-beta2"
-
-To create a new application you will usually follow this workflow:
-
- 1. Install the template with `composer create-project --prefer-dist --stability=dev mikehaertl/yii2-base-app .`
- 2. Add optional dependencies to `composer.json` and run `composer update`
- 3. Add local configuration to `config/local.php` (DB, etc.)
- 4. Check `config/params.php`, `config/web.php` and `config/console.php` and add project wide configuration
- 5. Check `migrations/m140328_144900_init` to suit your user table schema.
- 6. Check the models in `models/` and add/remove attributes.
- 7. Run migrations with `yii migrate`
-
-This should get you started. Your app should now run in a base version and is ready to be
-committed to your project repository.
-
-> Note: After the `composer create-command` step a unique cookie validation key is automatically
-> generated and added to `config/local.php` for you.
-
-> Note 2: `composer update` above may fail with an error about github rate limit exceeded.
-> Have a look [here](https://getcomposer.org/doc/articles/troubleshooting.md#api-rate-limit-and-oauth-tokens)
-> for how to resolve this issue.
-
-Development
------------
-
-To keep this template updated with the latest package version, we should run `composer update`
-from time to time and then commit `composer.lock`.
+* 支持多项目部署
+* 日志查询
+* 日志图表展示
+* 日志订阅
+* 日志报警
