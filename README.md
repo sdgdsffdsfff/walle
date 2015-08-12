@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Walle 瓦力 web ui
 ==========================
 
@@ -60,3 +61,7 @@ To Do List
 * 日志图表展示
 * 日志订阅
 * 日志报警
+=======
+# walle 瓦力
+a php web ui deploy tool
+>>>>>>> 3a763297d2c8ac82d3ef56d5a22f69087f8585e0
