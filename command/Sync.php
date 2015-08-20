@@ -50,13 +50,16 @@ class Sync extends Command {
         $remote->link();
     }
 
+    /**
+     * 目录、权限检查
+     *
+     * @author wushuiyong
+     * @param $log
+     * @return bool
+     */
     public function directorAndPermission() {
-        $command = 'mkdir -p %s' . $this->getConfig()->targetDir;
-        if (!$this->runRemoteCommand($command, $log)) {
-            $command = 'mkdir -p ' . $this->getConfig()->targetDir;
-            $result = $this->runRemoteCommand($command, $log);
-            dd($result);
-        }
+        $command = 'mkdir -p ' . $this->getConfig()->targetDir;
+        return $this->runRemoteCommand($command, $this->log);
 
     }
 
@@ -78,7 +81,7 @@ class Sync extends Command {
             . ($this->getConfig()->getDeployment('user') ? $this->getConfig()->getDeployment('user') . '@' : '')
             . $this->getConfig()->getHostName($remoteHost) . ':' . $this->getConfig()->targetDir;
 
-        return $this->runLocalCommand($command, $syncLog);
+        return $this->runLocalCommand($command, $this->log);
     }
 
 }

@@ -13,7 +13,6 @@ use walle\command\Command;
 class Git extends Command {
 
     public function updateRepo() {
-        $log = null;
         $destination = $this->getConfig()->getDeployment('from');
         // 存在git目录，直接pull
         if (file_exists($destination)) {
@@ -21,19 +20,17 @@ class Git extends Command {
             $cmd[] = sprintf('/usr/bin/env git fetch --all');
             $cmd[] = sprintf('/usr/bin/env git reset --hard origin/%s', $this->getConfig()->getScm('branch'));
             $command = join(' && ', $cmd);
-            $result = $this->runLocalCommand($command, $log);
+            return $this->runLocalCommand($command, $this->log);
         }
         // 不存在，则先checkout
         else {
             $parentDir = dirname($destination);
             $baseName = basename($destination);
             $cmd[] = sprintf('cd %s ', $parentDir);
-            $cmd[] = sprintf('/usr/bin/env git clone %s %s',
-                $this->getConfig()->getScm('url'), $baseName);
+            $cmd[] = sprintf('/usr/bin/env git clone %s %s', $this->getConfig()->getScm('url'), $baseName);
             $command = join(' && ', $cmd);
-            $result = $this->runLocalCommand($command, $log);
+            return $this->runLocalCommand($command, $this->log);
         }
-
     }
 
     /**
@@ -48,11 +45,16 @@ class Git extends Command {
         $cmd[] = sprintf('/usr/bin/env git reset %s', $commit);
         $cmd[] = '/usr/bin/env git checkout .';
         $command = join(' && ', $cmd);
-        $result = $this->runLocalCommand($command, $log);
-        return $result;
+        return $this->runLocalCommand($command, $this->log);
     }
 
+    /**
+     * 获取提交历史
+     *
+     * @return array
+     */
     public function getCommitList() {
+        $this->updateRepo();
         $destination = $this->getConfig()->getDeployment('from');
         $cmd[] = sprintf('cd %s ', $destination);
         $cmd[] = '/usr/bin/env git log --pretty="%h - %an %s"  --since="2008-10-01"  --no-merges';

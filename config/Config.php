@@ -36,8 +36,7 @@ class Config {
         if (isset($this->config)) return $this;
 
         $this->config = $this->parse($env);
-        dd($this->config);
-        if (empty($this->config)) throw new ParseException('找不到相关环境配置');
+        if (!is_array($this->config)) throw new ParseException('找不到相关环境配置');
 
         $this->scm        = $this->config['scm'];
         $this->deployment = $this->config['deployment'];
@@ -46,7 +45,7 @@ class Config {
         $this->releases   = $this->config['releases'];
         $this->hosts      = $this->config['hosts'];
         $this->tasks      = $this->config['tasks'];
-        $this->targetDir  = rtrim($this->deployment['to'], '/') . '/' . $this->releaseId;
+        $this->targetDir  = sprintf("%s/%s/%s", rtrim($this->releases['to'], '/'), $this->releases['directory'], $this->releaseId);
         return $this;
     }
 
@@ -61,7 +60,7 @@ class Config {
         ];
 
         $userExcludes = $this->deployment['excludes'];
-        return array_merge($excludes, $userExcludes);
+        return is_array($userExcludes) ? array_merge($excludes, $userExcludes) : $excludes;
     }
 
     /**
@@ -121,7 +120,7 @@ class Config {
      * @return string
      */
     public function getHostIdentityFileOption() {
-        return $this->deployment['identity-file'] ? ('-i ' . $this->deployment['identity-file'] . ' ') : '';
+        return isset($this->deployment['identity-file']) ? ('-i ' . $this->deployment['identity-file'] . ' ') : '';
     }
 
     /**

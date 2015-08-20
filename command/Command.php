@@ -16,7 +16,8 @@ abstract class Command {
      * Handler to the current Log File.
      * @var mixed
      */
-    private static $log = null;
+    private static $logFile = null;
+
 
     /**
      * Enables or Disables Logging
@@ -30,6 +31,8 @@ abstract class Command {
      */
     protected $config;
 
+    protected $log = null;
+
 //    abstract public function run();
 
     final protected function runLocalCommand($command, &$output) {
@@ -41,9 +44,7 @@ abstract class Command {
         exec($command . ' 2>&1', $log, $return);
         $log = implode(PHP_EOL, $log);
 
-        if (!$return) {
-            $output = trim($log);
-        }
+        $output = trim($log);
 
         self::log($log);
         self::log('---------------------------------');
@@ -83,7 +84,8 @@ abstract class Command {
 //            dd($localCommand);
             static::log('Run remote command ' . $remoteCommand);
 
-            $this->runLocalCommand($localCommand, $output);
+            $ret = $this->runLocalCommand($localCommand, $this->log);
+            if (!$ret) return false;
         }
         return true;
     }
@@ -117,16 +119,27 @@ abstract class Command {
 
     public static function log($message) {
         if (!self::$logEnabled) return;
-        if (self::$log === null) {
+        if (self::$logFile === null) {
             $logFile = realpath('/Users/wushuiyong/workspace/git/zlog/web/runtime/logs/') . '/log-' . date('Ymd-His') . '.log';
-            self::$log = fopen($logFile, 'w');
+            self::$logFile = fopen($logFile, 'w');
         }
 
         $message = date('Y-m-d H:i:s -- ') . $message;
-        fwrite(self::$log, $message . PHP_EOL);
-
-//        echo $message . PHP_EOL;
+        fwrite(self::$logFile, $message . PHP_EOL);
     }
 
+    /**
+     * 获取执行log
+     *
+     * @author wushuiyong
+     * @return string
+     */
+    public function getLog() {
+        return $this->log;
+    }
+
+    public static function getMs() {
+        return intval(microtime(true) * 1000);
+    }
 
 }
