@@ -12,11 +12,12 @@ use walle\config\Config;
 
 abstract class Command {
 
+    protected static $LOGDIR = '';
     /**
      * Handler to the current Log File.
      * @var mixed
      */
-    private static $logFile = null;
+    protected static $logFile = null;
 
 
     /**
@@ -93,6 +94,7 @@ abstract class Command {
     public function setConfig($env = 'production') {
         if ($env instanceof \walle\config\Config) {
             $this->config = $env;
+            static::$LOGDIR = $this->config->getDeployment('log-dir');
         } else {
             $this->config = new Config($env);
         }
@@ -120,7 +122,7 @@ abstract class Command {
     public static function log($message) {
         if (!self::$logEnabled) return;
         if (self::$logFile === null) {
-            $logFile = realpath('/Users/wushuiyong/workspace/git/zlog/web/runtime/logs/') . '/log-' . date('Ymd-His') . '.log';
+            $logFile = realpath(self::$LOGDIR) . '/log-' . date('Ymd-His') . '.log';
             self::$logFile = fopen($logFile, 'w');
         }
 
