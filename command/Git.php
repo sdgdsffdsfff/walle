@@ -53,11 +53,35 @@ class Git extends Command {
      *
      * @return array
      */
-    public function getCommitList() {
+    public function getCommitList($count = 20) {
         $this->updateRepo();
         $destination = $this->getConfig()->getDeployment('from');
         $cmd[] = sprintf('cd %s ', $destination);
-        $cmd[] = '/usr/bin/env git log --pretty="%h - %an %s"  --since="2008-10-01"  --no-merges';
+        $cmd[] = '/usr/bin/env git log -' . $count . ' --pretty="%h - %an %s" ';
+        $command = join(' && ', $cmd);
+        $list = [];
+        $result = $this->runLocalCommand($command, $list);
+        $history = [];
+        if ($result && $list) {
+            $list = explode("\n", $list);
+            foreach ($list as $item) {
+                $commitId = substr($item, 0, strpos($item, '-') - 1);
+                $history[$commitId] = $item;
+            }
+        }
+        return $history;
+    }
+
+    /**
+     * 获取tag记录
+     *
+     * @return array
+     */
+    public function getTagList($count = 20) {
+        $this->updateRepo();
+        $destination = $this->getConfig()->getDeployment('from');
+        $cmd[] = sprintf('cd %s ', $destination);
+        $cmd[] = '/usr/bin/env git tag -l -' . $count;
         $command = join(' && ', $cmd);
         $list = [];
         $result = $this->runLocalCommand($command, $list);
