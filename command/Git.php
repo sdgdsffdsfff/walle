@@ -81,7 +81,7 @@ class Git extends Command {
         $this->updateRepo();
         $destination = $this->getConfig()->getDeployment('from');
         $cmd[] = sprintf('cd %s ', $destination);
-        $cmd[] = '/usr/bin/env git tag -l -' . $count;
+        $cmd[] = '/usr/bin/env git tag -l -n' . $count;
         $command = join(' && ', $cmd);
         $list = [];
         $result = $this->runLocalCommand($command, $list);
@@ -89,7 +89,7 @@ class Git extends Command {
         if ($result && $list) {
             $list = explode("\n", $list);
             foreach ($list as $item) {
-                $commitId = substr($item, 0, strpos($item, '-') - 1);
+                $commitId = substr($item, 0, strpos($item, ' '));
                 $history[$commitId] = $item;
             }
         }
