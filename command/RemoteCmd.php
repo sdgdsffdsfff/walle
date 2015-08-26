@@ -16,8 +16,8 @@ class RemoteCmd extends Command {
 	$user = $this->getConfig()->getDeployment('user');
         $cmd[] = sprintf('cd %s', $this->getConfig()->getReleases('to'));
         $cmd[] = sprintf('ln -sfn releases/%s current.tmp', $this->getConfig()->getReleases('releaseId'));
-        $cmd[] = 'chown -h edison current.tmp';
 	$cmd[] = sprintf('chown -h %s current.tmp', $user);
+	$cmd[] = 'mv -fT current.tmp current';
         $command = join(' && ', $cmd);
 
         return $this->runRemoteCommand($command, $this->log);
