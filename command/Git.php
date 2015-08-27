@@ -13,7 +13,7 @@ use walle\command\Command;
 class Git extends Command {
 
     public function updateRepo() {
-        $destination = $this->getConfig()->getDeployment('from');
+        $destination = $this->getConfig()->getDeployment('destination');
         // 存在git目录，直接pull
         if (file_exists($destination)) {
             $cmd[] = sprintf('cd %s ', $destination);
@@ -26,6 +26,7 @@ class Git extends Command {
         else {
             $parentDir = dirname($destination);
             $baseName = basename($destination);
+            $cmd[] = sprintf('mkdir -p %s ', $destination);
             $cmd[] = sprintf('cd %s ', $parentDir);
             $cmd[] = sprintf('/usr/bin/env git clone %s %s', $this->getConfig()->getScm('url'), $baseName);
             $command = join(' && ', $cmd);
@@ -40,7 +41,7 @@ class Git extends Command {
      * @return bool
      */
     public function rollback($commit) {
-        $destination = $this->getConfig()->getDeployment('from');
+        $destination = $this->getConfig()->getDeployment('destination');
         $cmd[] = sprintf('cd %s ', $destination);
         $cmd[] = sprintf('/usr/bin/env git reset %s', $commit);
         $cmd[] = '/usr/bin/env git checkout .';
@@ -55,7 +56,7 @@ class Git extends Command {
      */
     public function getCommitList($count = 20) {
         $this->updateRepo();
-        $destination = $this->getConfig()->getDeployment('from');
+        $destination = $this->getConfig()->getDeployment('destination');
         $cmd[] = sprintf('cd %s ', $destination);
         $cmd[] = '/usr/bin/env git log -' . $count . ' --pretty="%h - %an %s" ';
         $command = join(' && ', $cmd);
@@ -79,7 +80,7 @@ class Git extends Command {
      */
     public function getTagList($count = 20) {
         $this->updateRepo();
-        $destination = $this->getConfig()->getDeployment('from');
+        $destination = $this->getConfig()->getDeployment('destination');
         $cmd[] = sprintf('cd %s ', $destination);
         $cmd[] = '/usr/bin/env git tag -l -n' . $count;
         $command = join(' && ', $cmd);

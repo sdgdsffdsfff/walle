@@ -13,9 +13,13 @@ use walle\command\Command;
 class RemoteCmd extends Command {
 
     public function link() {
+        $user = $this->getConfig()->getReleases('user');
         $cmd[] = sprintf('cd %s', $this->getConfig()->getReleases('to'));
-        $cmd[] = sprintf('ln -sfn releases/%s current.tmp', $this->getConfig()->getReleases('releaseId'));
-        $cmd[] = 'chown -h edison current.tmp';
+        $cmd[] = sprintf('ln -sfn releases/%s/%s current.tmp',
+            $this->getConfig()->getReleases('releaseId'),
+            $this->getConfig()->getDeployment('project')
+        );
+        $cmd[] = sprintf('chown -h %s current.tmp', $user);
         $cmd[] = 'mv -fT current.tmp current';
         $command = join(' && ', $cmd);
 

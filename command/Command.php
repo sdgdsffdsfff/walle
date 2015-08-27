@@ -74,7 +74,7 @@ abstract class Command {
             $localCommand = 'ssh ' . $this->getConfig()->getHostIdentityFileOption() . $needs_tty . ' -p ' . $this->getConfig()->getHostPort($remoteHost) . ' '
                 . '-q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no '
 //            . $this->getConfig()->getConnectTimeoutOption()
-                . ($this->getConfig()->getDeployment('user') ? $this->getConfig()->getDeployment('user') . '@' : '')
+                . ($this->getConfig()->getReleases('user') ? $this->getConfig()->getReleases('user') . '@' : '')
                 . $this->getConfig()->getHostName($remoteHost);
 
             $remoteCommand = str_replace('"', '\"', $command);
@@ -82,7 +82,6 @@ abstract class Command {
                 $remoteCommand = 'cd ' . rtrim($this->getConfig()->getDeployment('to'), '/') . $releasesDirectory . ' && ' . $remoteCommand;
             }
             $localCommand .= ' ' . '"sh -c \"' . $remoteCommand . '\""';
-//            dd($localCommand);
             static::log('Run remote command ' . $remoteCommand);
 
             $ret = $this->runLocalCommand($localCommand, $this->log);

@@ -41,10 +41,16 @@ class Config {
         $this->scm        = $this->config['scm'];
         $this->deployment = $this->config['deployment'];
         $this->releaseId  = date("Ymd-His", time());
-        $this->config['releases']['releaseId'] = $this->releaseId;
         $this->releases   = $this->config['releases'];
         $this->hosts      = $this->config['hosts'];
         $this->tasks      = $this->config['tasks'];
+        $this->config['releases']['releaseId'] = $this->releaseId;
+        $this->deployment['destination'] = sprintf('%s/%s/%s',
+            rtrim($this->deployment['from'], '/'),
+            $this->deployment['env'],
+            $this->getGitProjectName($this->scm['url'])
+        );
+        $this->deployment['project'] = $this->getGitProjectName($this->scm['url']);
         $this->targetDir  = sprintf("%s/%s/%s", rtrim($this->releases['to'], '/'), $this->releases['directory'], $this->releaseId);
         return $this;
     }
@@ -177,6 +183,13 @@ class Config {
         return method_exists($this, $getter)
             ? $this->$getter()
             : (isset($this->$attribute) ? $this->$attribute : null);
+    }
+
+    public function getGitProjectName($gitUrl) {
+        if (preg_match('#.*/(.*?)\.git#', $gitUrl, $match)) {
+            return $match[1];
+        }
+        return $gitUrl;
     }
 
 }

@@ -51,6 +51,17 @@ class Sync extends Command {
     }
 
     /**
+     * 初始化部署目录
+     *
+     * @return bool
+     */
+    public function initDirector() {
+        $command = sprintf('mkdir -p %s/%s',
+            rtrim($this->getConfig()->getDeployment('destination'), '/'),
+            $this->getConfig()->getDeployment('env'));
+        return $this->runLocalCommand($command, $this->log);
+    }
+    /**
      * 目录、权限检查
      *
      * @author wushuiyong
@@ -77,8 +88,8 @@ class Sync extends Command {
             . '-p' . $this->getConfig()->getHostPort($remoteHost) . '" '
             . $this->excludes($excludes) . ' '
 //            . $this->excludesListFile($excludesListFilePath) . ' '
-            . $this->getConfig()->getDeployment('from') . ' '
-            . ($this->getConfig()->getDeployment('user') ? $this->getConfig()->getDeployment('user') . '@' : '')
+            . $this->getConfig()->getDeployment('destination') . ' '
+            . ($this->getConfig()->getReleases('user') ? $this->getConfig()->getReleases('user') . '@' : '')
             . $this->getConfig()->getHostName($remoteHost) . ':' . $this->getConfig()->targetDir;
 
         return $this->runLocalCommand($command, $this->log);
