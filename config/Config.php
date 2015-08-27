@@ -40,11 +40,12 @@ class Config {
 
         $this->scm        = $this->config['scm'];
         $this->deployment = $this->config['deployment'];
-        $this->releaseId  = date("Ymd-His", time());
-        $this->releases   = $this->config['releases'];
         $this->hosts      = $this->config['hosts'];
         $this->tasks      = $this->config['tasks'];
+        
+        $this->releaseId  = date("Ymd-His", time());
         $this->config['releases']['releaseId'] = $this->releaseId;
+        $this->releases   = $this->config['releases'];
         $this->deployment['destination'] = sprintf('%s/%s/%s',
             rtrim($this->deployment['from'], '/'),
             $this->deployment['env'],
