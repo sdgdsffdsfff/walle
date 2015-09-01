@@ -19,6 +19,7 @@ class Git extends Command {
             $cmd[] = sprintf('cd %s ', $destination);
             $cmd[] = sprintf('/usr/bin/env git fetch --all');
             $cmd[] = sprintf('/usr/bin/env git reset --hard origin/%s', $this->getConfig()->getScm('branch'));
+            $cmd[] = sprintf('/usr/bin/env git checkout %s', $this->getConfig()->getScm('branch'));
             $command = join(' && ', $cmd);
             return $this->runLocalCommand($command, $this->log);
         }
@@ -29,6 +30,8 @@ class Git extends Command {
             $cmd[] = sprintf('mkdir -p %s ', $destination);
             $cmd[] = sprintf('cd %s ', $parentDir);
             $cmd[] = sprintf('/usr/bin/env git clone %s %s', $this->getConfig()->getScm('url'), $baseName);
+            $cmd[] = sprintf('cd %s', $destination);
+            $cmd[] = sprintf('/usr/bin/env git checkout %s', $this->getConfig()->getScm('branch'));
             $command = join(' && ', $cmd);
             return $this->runLocalCommand($command, $this->log);
         }
@@ -46,6 +49,7 @@ class Git extends Command {
         $cmd[] = sprintf('/usr/bin/env git reset %s', $commit);
         $cmd[] = '/usr/bin/env git checkout .';
         $command = join(' && ', $cmd);
+
         return $this->runLocalCommand($command, $this->log);
     }
 
@@ -67,7 +71,10 @@ class Git extends Command {
             $list = explode("\n", $list);
             foreach ($list as $item) {
                 $commitId = substr($item, 0, strpos($item, '-') - 1);
-                $history[$commitId] = $item;
+                $history[] = [
+                    'commitid' => $commitId,
+                    'message'  => $item,
+                ];
             }
         }
         return $history;

@@ -42,7 +42,7 @@ class Config {
         $this->deployment = $this->config['deployment'];
         $this->hosts      = $this->config['hosts'];
         $this->tasks      = $this->config['tasks'];
-        
+
         $this->releaseId  = date("Ymd-His", time());
         $this->config['releases']['releaseId'] = $this->releaseId;
         $this->releases   = $this->config['releases'];
@@ -52,7 +52,9 @@ class Config {
             $this->getGitProjectName($this->scm['url'])
         );
         $this->deployment['project'] = $this->getGitProjectName($this->scm['url']);
-        $this->targetDir  = sprintf("%s/%s/%s", rtrim($this->releases['to'], '/'), $this->releases['directory'], $this->releaseId);
+        $this->targetDir  = sprintf("%s/%s/%s/%s",
+            rtrim($this->releases['to'], '/'), $this->releases['directory'],
+            $this->getGitProjectName($this->scm['url']),$this->releaseId);
         return $this;
     }
 

@@ -37,6 +37,7 @@ abstract class Command {
 //    abstract public function run();
 
     final protected function runLocalCommand($command, &$output) {
+        file_put_contents('/tmp/cmd', $command.PHP_EOL.PHP_EOL, 8);
         self::log('---------------------------------');
         self::log('---- Executing: $ ' . $command);
 
@@ -79,7 +80,7 @@ abstract class Command {
 
             $remoteCommand = str_replace('"', '\"', $command);
             if ($cdToDirFirst) {
-                $remoteCommand = 'cd ' . rtrim($this->getConfig()->getDeployment('to'), '/') . $releasesDirectory . ' && ' . $remoteCommand;
+//                $remoteCommand = 'cd ' . rtrim($this->getConfig()->getDeployment('to'), '/') . $releasesDirectory . ' && ' . $remoteCommand;
             }
             $localCommand .= ' ' . '"sh -c \"' . $remoteCommand . '\""';
             static::log('Run remote command ' . $remoteCommand);
