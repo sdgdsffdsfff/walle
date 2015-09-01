@@ -174,7 +174,7 @@ class Config {
             : $default;
     }
 
-    public function getTasks($name, $default) {
+    public function getTasks($name, $default = null) {
         return isset($this->tasks[$name])
             ? $this->tasks[$name]
             : $default;

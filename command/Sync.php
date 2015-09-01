@@ -20,7 +20,7 @@ class Sync extends Command {
      * @return bool
      */
     public function initDirector() {
-        $command = sprintf('mkdir -p %s/%s',
+        $command = sprintf('mkdir -p %s',
             rtrim($this->getConfig()->getDeployment('destination'), '/'));
         return $this->runLocalCommand($command, $this->log);
     }
