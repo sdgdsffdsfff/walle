@@ -19,10 +19,47 @@ class Task extends Command {
      * @return bool
      */
     public function preDeploy() {
+        $tasks = $this->getConfig()->getTasks('pre-deploy');
+        if (empty($tasks)) return true;
+
         $cmd = [];
         $workspace = trim(rtrim($this->getConfig()->getDeployment('destination'), '/'));
-        foreach ($this->getConfig()->getTasks('pre-deploy') as $task) {
-            $cmd[] = preg_replace('#{WORKSPACE}#', $workspace, $task);
+        $pattern = [
+            '#{WORKSPACE}#',
+        ];
+        $replace = [
+            $workspace,
+        ];
+
+        foreach ($tasks as $task) {
+            $cmd[] = preg_replace($pattern, $replace, $task);
+        }
+        $command = join(' && ', $cmd);
+        return $this->runLocalCommand($command, $this->log);
+    }
+
+    /**
+     * release时任务
+     *
+     * @return bool
+     */
+    public function postRelease() {
+        $tasks = $this->getConfig()->getTasks('post-release');
+        if (empty($tasks)) return true;
+
+        $cmd = [];
+        $workspace = trim(rtrim($this->getConfig()->getReleases('destination'), '/'));
+        $version   = $this->getConfig()->targetDir;
+        $pattern = [
+            '#{WORKSPACE}#',
+            '#{VERSION}#',
+        ];
+        $replace = [
+            $workspace,
+            $version,
+        ];
+        foreach ($tasks as $task) {
+            $cmd[] = preg_replace($pattern, $replace, $task);
         }
         $command = join(' && ', $cmd);
         return $this->runLocalCommand($command, $this->log);

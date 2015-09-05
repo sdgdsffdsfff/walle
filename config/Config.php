@@ -45,6 +45,7 @@ class Config {
 
         $this->releaseId  = date("Ymd-His", time());
         $this->config['releases']['releaseId'] = $this->releaseId;
+        $this->config['releases']['destination'] = sprintf("%s/%s", rtrim($this->config['releases']['to'], '/'), trim($this->config['releases']['symlink'], '/'));
         $this->releases   = $this->config['releases'];
         $this->deployment['destination'] = sprintf('%s/%s/%s',
             rtrim($this->deployment['from'], '/'),
@@ -54,7 +55,7 @@ class Config {
         $this->deployment['project'] = $this->getGitProjectName($this->scm['url']);
         $this->targetDir  = sprintf("%s/%s/%s/%s",
             rtrim($this->releases['to'], '/'), $this->releases['directory'],
-            $this->getGitProjectName($this->scm['url']),$this->releaseId);
+            $this->getGitProjectName($this->scm['url']), $this->releaseId);
         return $this;
     }
 
