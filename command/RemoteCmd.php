@@ -12,12 +12,12 @@ use walle\command\Command;
 
 class RemoteCmd extends Command {
 
-    public function link() {
+    public function link($version = null) {
         $user = $this->getConfig()->getReleases('user');
         $cmd[] = sprintf('cd %s', $this->getConfig()->getReleases('to'));
         $cmd[] = sprintf('ln -sfn releases/%s/%s current.tmp',
             $this->getConfig()->getDeployment('project'),
-            $this->getConfig()->getReleases('releaseId')
+            $version ? $version : $this->getConfig()->getReleases('release_id')
         );
         $cmd[] = sprintf('chown -h %s current.tmp', $user);
         $cmd[] = sprintf('mv -fT current.tmp %s', $this->getConfig()->getReleases('symlink'));

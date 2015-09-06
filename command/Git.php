@@ -72,7 +72,7 @@ class Git extends Command {
             foreach ($list as $item) {
                 $commitId = substr($item, 0, strpos($item, '-') - 1);
                 $history[] = [
-                    'commitid' => $commitId,
+                    'commit_id' => $commitId,
                     'message'  => $item,
                 ];
             }

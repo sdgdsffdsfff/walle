@@ -32,18 +32,26 @@ abstract class Command {
      */
     protected $config;
 
+    /**
+     * 命令运行返回值：0失败，1成功
+     * @var int
+     */
+    protected $status = 1;
+
+    protected $command = '';
+
     protected $log = null;
 
-//    abstract public function run();
 
     final protected function runLocalCommand($command, &$output) {
         file_put_contents('/tmp/cmd', $command.PHP_EOL.PHP_EOL, 8);
         self::log('---------------------------------');
         self::log('---- Executing: $ ' . $command);
 
-        $return = 1;
+        $status = 1;
         $log = [];
-        exec($command . ' 2>&1', $log, $return);
+        exec($command . ' 2>&1', $log, $status);
+        $this->status = !$status;
         $log = implode(PHP_EOL, $log);
 
         $output = trim($log);
@@ -51,23 +59,10 @@ abstract class Command {
         self::log($log);
         self::log('---------------------------------');
 
-        return !$return;
+        return $this->status;
     }
 
     final protected function runRemoteCommand($command, &$output, $cdToDirFirst = true) {
-        if (0&&$this->getConfig()->getReleases('enabled', false) === true) {
-            if ($this instanceof IsReleaseAware) {
-                $releasesDirectory = '';
-            } else {
-                $releasesDirectory = '/'
-                    . $this->getConfig()->getReleases('directory', 'releases')
-                    . '/'
-                    . $this->getConfig()->getReleaseId();
-            }
-        } else {
-            $releasesDirectory = '';
-        }
-
         // if general.yml includes "ssy_needs_tty: true", then add "-t" to the ssh command
         $needs_tty = ''; #($this->getConfig()->general('ssh_needs_tty', false) ? '-t' : '');
 
@@ -85,8 +80,8 @@ abstract class Command {
             $localCommand .= ' ' . '"sh -c \"' . $remoteCommand . '\""';
             static::log('Run remote command ' . $remoteCommand);
 
-            $ret = $this->runLocalCommand($localCommand, $this->log);
-            if (!$ret) return false;
+            $this->status = $this->runLocalCommand($localCommand, $this->log);
+            if (!$this->status) return false;
         }
         return true;
     }
@@ -131,13 +126,33 @@ abstract class Command {
     }
 
     /**
+     * 获取执行command
+     *
+     * @author wushuiyong
+     * @return string
+     */
+    public function getExeCommand() {
+        return $this->command;
+    }
+
+    /**
      * 获取执行log
      *
      * @author wushuiyong
      * @return string
      */
-    public function getLog() {
+    public function getExeLog() {
         return $this->log;
+    }
+
+    /**
+     * 获取执行log
+     *
+     * @author wushuiyong
+     * @return string
+     */
+    public function getExeStatus() {
+        return $this->status;
     }
 
     public static function getMs() {
