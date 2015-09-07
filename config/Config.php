@@ -55,7 +55,7 @@ class Config {
         $this->deployment['project'] = $this->getGitProjectName($this->scm['url']);
         $this->targetDir  = sprintf("%s/%s/%s/%s",
             rtrim($this->releases['to'], '/'), $this->releases['directory'],
-            $this->getGitProjectName($this->scm['url']), $this->release_id);
+            $this->getGitProjectName($this->scm['url']), $this->releaseId);
         return $this;
     }
 
