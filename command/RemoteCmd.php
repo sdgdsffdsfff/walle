@@ -17,13 +17,11 @@ class RemoteCmd extends Command {
         $destination = dirname($this->getConfig()->getReleases('destination'));
         $project = $this->getConfig()->getReleases('project');
         $currentTmp = sprintf('current-%s.tmp', $project);
-        $cmd[] = sprintf('ln -sfn %s/%s/%s %s/%s',
-            rtrim($this->getConfig()->getReleases('release'), '/'),
-            $project,
-            $version ? $version : $this->getConfig()->getReleases('release_id'),
-            $destination,
-            $currentTmp
-        );
+        // 遇到回滚，则使用回滚的版本version
+        $linkFrom = $version
+            ? dirname($this->getConfig()->targetDir) . '/' . $version
+            : $this->getConfig()->targetDir;
+        $cmd[] = sprintf('ln -sfn %s %s/%s', $linkFrom, $destination, $currentTmp);
         $cmd[] = sprintf('chown -h %s %s/%s', $user, $destination, $currentTmp);
         $cmd[] = sprintf('mv -fT %s/%s %s', $destination, $currentTmp, $this->getConfig()->getReleases('destination'));
         $command = join(' && ', $cmd);
