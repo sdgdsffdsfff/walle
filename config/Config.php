@@ -32,7 +32,7 @@ class Config {
         $this->getEnv($env);
     }
 
-    public function getEnv($env = 'production') {
+    public function getEnv($env) {
         if (isset($this->config)) return $this;
 
         $this->config = $this->parse($env);
@@ -43,19 +43,26 @@ class Config {
         $this->hosts      = $this->config['hosts'];
         $this->tasks      = $this->config['tasks'];
 
+        // 远程release
         $this->releaseId  = date("Ymd-His", time());
         $this->config['releases']['release_id'] = $this->releaseId;
-        $this->config['releases']['destination'] = sprintf("%s/%s", rtrim($this->config['releases']['to'], '/'), trim($this->config['releases']['symlink'], '/'));
+        $this->config['releases']['project'] = basename($this->config['releases']['destination']);
         $this->releases   = $this->config['releases'];
+        // 远程机器打一个时间点作为上线版本
+        $this->targetDir  = sprintf("%s/%s/%s",
+            rtrim($this->releases['release'], '/'),
+            $this->getGitProjectName($this->scm['url']), $this->releaseId);
+
+        // 部署机预发布准备
+        ///区分环境和git的Repo
         $this->deployment['destination'] = sprintf('%s/%s/%s',
             rtrim($this->deployment['from'], '/'),
             $this->deployment['env'],
             $this->getGitProjectName($this->scm['url'])
         );
+        // 把git的Repo作为项目名字
         $this->deployment['project'] = $this->getGitProjectName($this->scm['url']);
-        $this->targetDir  = sprintf("%s/%s/%s/%s",
-            rtrim($this->releases['to'], '/'), $this->releases['directory'],
-            $this->getGitProjectName($this->scm['url']), $this->releaseId);
+
         return $this;
     }
 

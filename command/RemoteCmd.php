@@ -14,13 +14,18 @@ class RemoteCmd extends Command {
 
     public function link($version = null) {
         $user = $this->getConfig()->getReleases('user');
-        $cmd[] = sprintf('cd %s', $this->getConfig()->getReleases('to'));
-        $cmd[] = sprintf('ln -sfn releases/%s/%s current.tmp',
-            $this->getConfig()->getDeployment('project'),
-            $version ? $version : $this->getConfig()->getReleases('release_id')
+        $destination = dirname($this->getConfig()->getReleases('destination'));
+        $project = $this->getConfig()->getReleases('project');
+        $currentTmp = sprintf('current-%s.tmp', $project);
+        $cmd[] = sprintf('ln -sfn %s/%s/%s %s/%s',
+            rtrim($this->getConfig()->getReleases('release'), '/'),
+            $project,
+            $version ? $version : $this->getConfig()->getReleases('release_id'),
+            $destination,
+            $currentTmp
         );
-        $cmd[] = sprintf('chown -h %s current.tmp', $user);
-        $cmd[] = sprintf('mv -fT current.tmp %s', $this->getConfig()->getReleases('symlink'));
+        $cmd[] = sprintf('chown -h %s %s/%s', $user, $destination, $currentTmp);
+        $cmd[] = sprintf('mv -fT %s/%s %s', $destination, $currentTmp, $this->getConfig()->getReleases('destination'));
         $command = join(' && ', $cmd);
 
         return $this->runRemoteCommand($command, $this->log);
