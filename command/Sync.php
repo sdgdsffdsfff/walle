@@ -22,7 +22,7 @@ class Sync extends Command {
     public function initDirector() {
         $command = sprintf('mkdir -p %s',
             rtrim($this->getConfig()->getDeployment('destination'), '/'));
-        return $this->runLocalCommand($command, $this->log);
+        return $this->runLocalCommand($command);
     }
     /**
      * 目录、权限检查
@@ -33,7 +33,7 @@ class Sync extends Command {
      */
     public function directorAndPermission() {
         $command = 'mkdir -p ' . $this->getConfig()->targetDir;
-        return $this->runRemoteCommand($command, $this->log);
+        return $this->runRemoteCommand($command);
 
     }
 

@@ -35,7 +35,7 @@ class Task extends Command {
             $cmd[] = preg_replace($pattern, $replace, $task);
         }
         $command = join(' && ', $cmd);
-        return $this->runLocalCommand($command, $this->log);
+        return $this->runLocalCommand($command);
     }
 
     /**
@@ -62,7 +62,7 @@ class Task extends Command {
             $cmd[] = preg_replace($pattern, $replace, $task);
         }
         $command = join(' && ', $cmd);
-        return $this->runLocalCommand($command, $this->log);
+        return $this->runLocalCommand($command);
     }
 
 }

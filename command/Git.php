@@ -21,7 +21,7 @@ class Git extends Command {
             $cmd[] = sprintf('/usr/bin/env git reset --hard origin/%s', $this->getConfig()->getScm('branch'));
             $cmd[] = sprintf('/usr/bin/env git checkout %s', $this->getConfig()->getScm('branch'));
             $command = join(' && ', $cmd);
-            return $this->runLocalCommand($command, $this->log);
+            return $this->runLocalCommand($command);
         }
         // 不存在，则先checkout
         else {
@@ -33,7 +33,7 @@ class Git extends Command {
             $cmd[] = sprintf('cd %s', $destination);
             $cmd[] = sprintf('/usr/bin/env git checkout %s', $this->getConfig()->getScm('branch'));
             $command = join(' && ', $cmd);
-            return $this->runLocalCommand($command, $this->log);
+            return $this->runLocalCommand($command);
         }
     }
 
@@ -50,7 +50,7 @@ class Git extends Command {
         $cmd[] = '/usr/bin/env git checkout .';
         $command = join(' && ', $cmd);
 
-        return $this->runLocalCommand($command, $this->log);
+        return $this->runLocalCommand($command);
     }
 
     /**
@@ -64,11 +64,10 @@ class Git extends Command {
         $cmd[] = sprintf('cd %s ', $destination);
         $cmd[] = '/usr/bin/env git log -' . $count . ' --pretty="%h - %an %s" ';
         $command = join(' && ', $cmd);
-        $list = [];
-        $result = $this->runLocalCommand($command, $list);
+        $result = $this->runLocalCommand($command);
         $history = [];
-        if ($result && $list) {
-            $list = explode("\n", $list);
+        if ($result) {
+            $list = explode("\n", $this->getExeLog());
             foreach ($list as $item) {
                 $commitId = substr($item, 0, strpos($item, '-') - 1);
                 $history[] = [
@@ -91,11 +90,10 @@ class Git extends Command {
         $cmd[] = sprintf('cd %s ', $destination);
         $cmd[] = '/usr/bin/env git tag -l -n' . $count;
         $command = join(' && ', $cmd);
-        $list = [];
-        $result = $this->runLocalCommand($command, $list);
+        $result = $this->runLocalCommand($command);
         $history = [];
-        if ($result && $list) {
-            $list = explode("\n", $list);
+        if ($result) {
+            $list = explode("\n", $this->getExeLog());
             foreach ($list as $item) {
                 $commitId = substr($item, 0, strpos($item, ' '));
                 $history[] = [
