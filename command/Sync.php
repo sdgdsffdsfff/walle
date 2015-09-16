@@ -55,7 +55,7 @@ class Sync extends Command {
             . ($this->getConfig()->getReleases('user') ? $this->getConfig()->getReleases('user') . '@' : '')
             . $this->getConfig()->getHostName($remoteHost) . ':' . $this->getConfig()->targetDir;
 
-        return $this->runLocalCommand($command, $this->log);
+        return $this->runLocalCommand($command);
     }
 
 }

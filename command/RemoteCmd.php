@@ -26,7 +26,14 @@ class RemoteCmd extends Command {
         $cmd[] = sprintf('mv -fT %s/%s %s', $destination, $currentTmp, $this->getConfig()->getReleases('destination'));
         $command = join(' && ', $cmd);
 
-        return $this->runRemoteCommand($command, $this->log);
+        return $this->runRemoteCommand($command);
+    }
+
+    public function getFileMd5($file) {
+        $cmd[] = "test -f /usr/bin/md5sum && md5sum {$file}";
+        $command = join(' && ', $cmd);
+
+        return $this->runRemoteCommand($command);
     }
 }
 

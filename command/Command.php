@@ -43,7 +43,7 @@ abstract class Command {
     protected $log = null;
 
 
-    final protected function runLocalCommand($command, &$output) {
+    final protected function runLocalCommand($command) {
         file_put_contents('/tmp/cmd', $command.PHP_EOL.PHP_EOL, 8);
         self::log('---------------------------------');
         self::log('---- Executing: $ ' . $command);
@@ -54,7 +54,7 @@ abstract class Command {
         $this->status = !$status;
         $log = implode(PHP_EOL, $log);
 
-        $output = trim($log);
+        $this->log = trim($log);
 
         self::log($log);
         self::log('---------------------------------');
@@ -62,7 +62,8 @@ abstract class Command {
         return $this->status;
     }
 
-    final protected function runRemoteCommand($command, &$output, $cdToDirFirst = true) {
+    final protected function runRemoteCommand($command, $cdToDirFirst = true) {
+        $this->log = '';
         // if general.yml includes "ssy_needs_tty: true", then add "-t" to the ssh command
         $needs_tty = ''; #($this->getConfig()->general('ssh_needs_tty', false) ? '-t' : '');
 
@@ -80,7 +81,9 @@ abstract class Command {
             $localCommand .= ' ' . '"sh -c \"' . $remoteCommand . '\""';
             static::log('Run remote command ' . $remoteCommand);
 
-            $this->status = $this->runLocalCommand($localCommand, $this->log);
+            $log = $this->log;
+            $this->status = $this->runLocalCommand($localCommand);
+            $this->log = $log . (($log ? PHP_EOL : '') . $remoteHost . ' : ' . $this->log);
             if (!$this->status) return false;
         }
         return true;
